@@ -1,0 +1,114 @@
+@model IEnumerable<AeC.Enderecos.Models.Endereco>
+
+@{
+    ViewData["Title"] = "Meus Endereços";
+}
+
+<div class="card">
+
+    @* Cabeçalho com título e botões de ação *@
+    <div class="card-header-custom">
+        <div>
+            <h1 class="card-title">Meus Endereços</h1>
+            <p class="card-subtitle">@Model.Count() endereço(s) cadastrado(s)</p>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            @* Botão de exportar CSV — chama a action ExportarCsv no controller *@
+            @if (Model.Any())
+            {
+                <a asp-action="ExportarCsv" class="btn btn-success">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Exportar CSV
+                </a>
+            }
+
+            @* Botão para ir à tela de cadastro *@
+            <a asp-action="Create" class="btn btn-primary">
+                + Novo Endereço
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body-custom">
+
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>CEP</th>
+                        <th>Logradouro</th>
+                        <th>Bairro</th>
+                        <th>Cidade</th>
+                        <th>UF</th>
+                        <th>Número</th>
+                        <th style="text-align:right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @* Se não houver endereços, mostra mensagem amigável *@
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="table-empty">
+                                    <div class="table-empty-icon">📭</div>
+                                    <p>Nenhum endereço cadastrado ainda.</p>
+                                    <a asp-action="Create" class="btn btn-primary" style="margin-top:12px;">
+                                        Cadastrar primeiro endereço
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Cep</td>
+
+                            <td>
+                                @* Mostra o logradouro em negrito e o complemento menor abaixo *@
+                                <div class="td-logradouro">@item.Logradouro, @item.Numero</div>
+                                @if (!string.IsNullOrWhiteSpace(item.Complemento))
+                                {
+                                    <div class="td-complemento">@item.Complemento</div>
+                                }
+                            </td>
+
+                            <td>@item.Bairro</td>
+                            <td>@item.Cidade</td>
+
+                            <td>
+                                @* Badge colorido para o estado *@
+                                <span class="badge-uf">@item.Uf</span>
+                            </td>
+
+                            <td>@item.Numero</td>
+
+                            @* Botões de ação por linha *@
+                            <td class="td-acoes">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                                    Ver
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                    Excluir
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>

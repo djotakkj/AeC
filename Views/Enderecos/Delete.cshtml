@@ -1,0 +1,54 @@
+@model AeC.Enderecos.Models.Endereco
+
+@{
+    ViewData["Title"] = "Excluir Endereço";
+}
+
+<div class="card delete-card">
+
+    @* Cabeçalho vermelho de aviso *@
+    <div class="delete-header">
+        <h2>⚠️ Confirmar Exclusão</h2>
+        <p>Tem certeza que deseja excluir este endereço? Esta ação não pode ser desfeita.</p>
+    </div>
+
+    <div style="padding: 20px 24px;">
+
+        @* Lista com os dados do endereço que será excluído *@
+        <div class="detail-row">
+            <span class="detail-label">CEP</span>
+            <span class="detail-value">@Model.Cep</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Logradouro</span>
+            <span class="detail-value">@Model.Logradouro, @Model.Numero</span>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Complemento))
+        {
+            <div class="detail-row">
+                <span class="detail-label">Complemento</span>
+                <span class="detail-value">@Model.Complemento</span>
+            </div>
+        }
+        <div class="detail-row">
+            <span class="detail-label">Bairro</span>
+            <span class="detail-value">@Model.Bairro</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Cidade / UF</span>
+            <span class="detail-value">@Model.Cidade — <span class="badge-uf">@Model.Uf</span></span>
+        </div>
+
+        @* Formulário de confirmação — POST para DeleteConfirmed *@
+        <form asp-action="Delete" style="margin-top: 24px;">
+            <input type="hidden" asp-for="Id" />
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">
+                    Sim, excluir
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+
+    </div>
+</div>

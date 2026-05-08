@@ -1,0 +1,161 @@
+@model AeC.Enderecos.Models.Endereco
+
+@{
+    ViewData["Title"] = "Novo Endereço";
+}
+
+<div class="card">
+
+    <div class="card-header-custom">
+        <div>
+            <h1 class="card-title">Novo Endereço</h1>
+            <p class="card-subtitle">Preencha o CEP para preenchimento automático, ou insira manualmente.</p>
+        </div>
+    </div>
+
+    <div class="card-body-custom">
+        <div class="form-section">
+
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                @* ---- SEÇÃO 1: CEP com busca automática ---- *@
+                <p style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--texto-secundario); margin-bottom:14px;">
+                    Busca por CEP
+                </p>
+
+                <div class="form-row-cep form-group">
+                    <div>
+                        <label asp-for="Cep" class="form-label">CEP</label>
+
+                        @* cep-wrapper permite posicionar o spinner sobre o input *@
+                        <div class="cep-wrapper">
+                            <input asp-for="Cep"
+                                   id="cep"
+                                   class="form-control"
+                                   placeholder="00000-000"
+                                   maxlength="9"
+                                   autocomplete="off" />
+                            <div id="cepSpinner" class="cep-spinner"></div>
+                        </div>
+                        <span asp-validation-for="Cep" class="text-danger"></span>
+                        <p class="form-hint">Digite o CEP para preencher o endereço automaticamente.</p>
+                    </div>
+                    <div>
+                        <label asp-for="Numero" class="form-label">Número</label>
+                        <input asp-for="Numero" class="form-control" placeholder="Ex: 123, S/N" />
+                        <span asp-validation-for="Numero" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-divider"></div>
+
+                @*SEÇÃO 2: Dados do endereço (preenchidos pelo CEP ou manualmente)*@
+                <p style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.8px; color:var(--texto-secundario); margin-bottom:14px;">
+                    Dados do Endereço
+                </p>
+
+                <div class="form-group">
+                    <label asp-for="Logradouro" class="form-label">Logradouro</label>
+                    <input asp-for="Logradouro" id="logradouro" class="form-control" placeholder="Rua, Avenida, etc." />
+                    <span asp-validation-for="Logradouro" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Complemento" class="form-label">
+                        Complemento
+                        <span class="label-opcional">(opcional)</span>
+                    </label>
+                    <input asp-for="Complemento" class="form-control" placeholder="Apto, Bloco, Sala, etc." />
+                    <span asp-validation-for="Complemento" class="text-danger"></span>
+                </div>
+
+                <div class="form-row form-group">
+                    <div>
+                        <label asp-for="Bairro" class="form-label">Bairro</label>
+                        <input asp-for="Bairro" id="bairro" class="form-control" placeholder="Nome do bairro" />
+                        <span asp-validation-for="Bairro" class="text-danger"></span>
+                    </div>
+                    <div>
+                        <label asp-for="Cidade" class="form-label">Cidade</label>
+                        <input asp-for="Cidade" id="cidade" class="form-control" placeholder="Nome da cidade" />
+                        <span asp-validation-for="Cidade" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="max-width:100px">
+                    <label asp-for="Uf" class="form-label">Estado (UF)</label>
+                    <input asp-for="Uf" id="uf" class="form-control" placeholder="SP" maxlength="2" style="text-transform:uppercase" />
+                    <span asp-validation-for="Uf" class="text-danger"></span>
+                </div>
+
+                <div class="form-divider"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        Salvar Endereço
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        // BUSCA DE CEP AUTOMÁTICA
+        // Quando o usuário sai do campo CEP, consulta a API ViaCEP
+        // através do nosso endpoint /Enderecos/BuscarCep
+
+        const campoCep     = document.getElementById('cep');
+        const spinner      = document.getElementById('cepSpinner');
+        const campoLogr    = document.getElementById('logradouro');
+        const campoBairro  = document.getElementById('bairro');
+        const campoCidade  = document.getElementById('cidade');
+        const campoUf      = document.getElementById('uf');
+
+        // Formata o CEP enquanto o usuário digita: "12345678" → "12345-678"
+        campoCep.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);
+            this.value = v;
+        });
+
+        // Quando sai do campo, faz a busca se tiver 8 dígitos
+        campoCep.addEventListener('blur', async function () {
+            const cep = this.value.replace(/\D/g, '');
+            if (cep.length !== 8) return;
+
+            // Mostra o spinner de carregamento
+            spinner.classList.add('ativo');
+
+            try {
+                const res = await fetch(`/Enderecos/BuscarCep?cep=${cep}`);
+
+                if (!res.ok) {
+                    alert('CEP não encontrado. Preencha o endereço manualmente.');
+                    return;
+                }
+
+                const dados = await res.json();
+
+                // Preenche os campos com os dados retornados
+                // (só preenche se tiver valor — deixa o usuário editar se vier vazio)
+                if (dados.logradouro) campoLogr.value   = dados.logradouro;
+                if (dados.bairro)     campoBairro.value  = dados.bairro;
+                if (dados.cidade)     campoCidade.value  = dados.cidade;
+                if (dados.uf)         campoUf.value      = dados.uf;
+
+            } catch (erro) {
+                console.error('Erro ao buscar CEP:', erro);
+            } finally {
+                // Esconde o spinner independente de sucesso ou erro
+                spinner.classList.remove('ativo');
+            }
+        });
+    </script>
+}
