@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Gerenciador de Endereços</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+@* =============================================
+   LAYOUT COM SIDEBAR — usado em todas as páginas
+   após o login.
+   ============================================= *@
+
+<div class="app-wrapper">
+
+    @* ---- SIDEBAR ---- *@
+    <aside class="sidebar">
+
+        @* Logo / Nome do sistema *@
+        <div class="sidebar-logo">
+            <div class="brand-name">📍 Endereços</div>
+            <div class="brand-sub">Gerenciador AeC</div>
+        </div>
+
+        @* Menu de navegação *@
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Menu</div>
+
+            <a class="nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Enderecos" ? "active" : "")"
+               asp-controller="Enderecos" asp-action="Index">
+                @* Ícone SVG de localização *@
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                    <circle cx="12" cy="9" r="2.5"/>
+                </svg>
+                Meus Endereços
+            </a>
+
+            <a class="nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Create" ? "active" : "")"
+               asp-controller="Enderecos" asp-action="Create">
+                @* Ícone SVG de adicionar *@
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="16"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Novo Endereço
+            </a>
+        </nav>
+
+        @* Rodapé: info do usuário logado + botão sair *@
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    @* Mostra a primeira letra do nome do usuário *@
+                    @(User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
+                </div>
+                <div>
+                    <div class="user-name">@User.Identity?.Name</div>
+                    <div class="user-role">Usuário</div>
+                </div>
+            </div>
+
+            <a class="btn-sair" asp-controller="Auth" asp-action="Logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Sair
+            </a>
+        </div>
+
+    </aside>
+
+    @* ---- CONTEÚDO PRINCIPAL ---- *@
+    <div class="main-content">
+
+        @* Barra superior com o título da página atual *@
+        <div class="topbar">
+            <span class="topbar-title">@ViewData["Title"]</span>
+            <span class="topbar-breadcrumb">
+                AeC / @ViewContext.RouteData.Values["controller"] / @ViewContext.RouteData.Values["action"]
+            </span>
+        </div>
+
+        @* Área onde cada View renderiza seu conteúdo *@
+        <div class="content-area">
+            @RenderBody()
+        </div>
+
+    </div>
+
+</div>
+
+@* Scripts na ordem correta: jQuery → Bootstrap → scripts customizados → scripts da página *@
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>
