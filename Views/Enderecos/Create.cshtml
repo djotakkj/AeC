@@ -145,10 +145,11 @@
 
                 // Preenche os campos com os dados retornados
                 // (só preenche se tiver valor — deixa o usuário editar se vier vazio)
-                if (dados.logradouro) campoLogr.value   = dados.logradouro;
-                if (dados.bairro)     campoBairro.value  = dados.bairro;
-                if (dados.cidade)     campoCidade.value  = dados.cidade;
-                if (dados.uf)         campoUf.value      = dados.uf;
+                if (dados.logradouro) campoLogr.value  = dados.logradouro;
+                if (dados.bairro)     campoBairro.value = dados.bairro;
+                if (dados.cidade)     campoCidade.value = dados.cidade;
+                else if (dados.localidade) campoCidade.value = dados.localidade;
+                if (dados.uf)         campoUf.value     = dados.uf;
 
             } catch (erro) {
                 console.error('Erro ao buscar CEP:', erro);
