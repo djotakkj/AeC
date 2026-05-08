@@ -1,0 +1,79 @@
+@{
+    ViewData["Title"] = "Login";
+    Layout = null; @* Login tem layout próprio, sem sidebar *@
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — Gerenciador de Endereços</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+<div class="login-page">
+
+    @*PAINEL ESQUERDO — decorativo*@
+    <div class="login-panel-left">
+        <div class="login-brand">📍 AeC Endereços</div>
+        <h1 class="login-headline">Gerencie seus endereços com facilidade</h1>
+        <p class="login-subheadline">
+            Cadastre, edite e exporte endereços de forma simples.<br />
+            Busca automática por CEP integrada.
+        </p>
+    </div>
+
+    @*PAINEL DIREITO — formulário*@
+    <div class="login-panel-right">
+        <div class="login-form-box">
+
+            <h2 class="login-form-title">Entrar na conta</h2>
+            <p class="login-form-subtitle">Informe suas credenciais para continuar.</p>
+
+            @* Exibe mensagem de erro se as credenciais forem inválidas *@
+            @if (ViewBag.Erro != null)
+            {
+                <div class="alert alert-danger">
+                    ⚠️ @ViewBag.Erro
+                </div>
+            }
+
+            <form method="post">
+
+                <div class="form-group">
+                    <label class="form-label" for="nomeUsuario">Usuário</label>
+                    <input type="text"
+                           id="nomeUsuario"
+                           name="nomeUsuario"
+                           class="form-control"
+                           placeholder="Digite seu usuário"
+                           autocomplete="username"
+                           required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="senha">Senha</label>
+                    <input type="password"
+                           id="senha"
+                           name="senha"
+                           class="form-control"
+                           placeholder="Digite sua senha"
+                           autocomplete="current-password"
+                           required />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-w100" style="margin-top: 8px;">
+                    Entrar
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
